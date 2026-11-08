@@ -1,0 +1,45 @@
+{
+  "name": "dsh-workspace-progress",
+  "version": "1.0.0",
+  "description": "Workspace-level, evidence-based progress sharing across DSH sessions",
+  "type": "module",
+  "license": "MIT",
+  "author": "xurui",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iReic-coder/dsh-workspace-progress.git"
+  },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "cordis",
+    "plugin",
+    "progress",
+    "workspace"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "lib/*.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

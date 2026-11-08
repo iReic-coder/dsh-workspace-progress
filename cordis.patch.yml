@@ -1,0 +1,9 @@
+- insert:
+    - id: workspace-progress
+      name: dsh-workspace-progress
+      config:
+        enabled: true
+        inject: true
+        summaryMaxTokens: 700
+        idleDebounceMs: 5000
+        scope: repository
