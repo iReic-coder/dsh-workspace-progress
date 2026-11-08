@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { factsFromToolResult } from '../lib/evidence.js'
+import { factsFromToolResult, testLabel } from '../lib/evidence.js'
 
 const config = { redactSecrets: true }
 
@@ -53,6 +53,24 @@ test('EXIT=n markers are parsed as exit codes', () => {
   const [fact] = testFacts(pending, resultEvent({ callId: 'c4', text: 'failed\nEXIT=1' }))
   assert.equal(fact.exitCode, 1)
   assert.equal(fact.ok, false)
+})
+
+test('test labels strip PowerShell preambles and absolute runners', () => {
+  assert.equal(
+    testLabel(`$ErrorActionPreference='Continue' $node='C:\\tools\\node.exe'; cd 'C:\\proj'; & $node --test "C:\\proj\\test\\paths.test.js"`),
+    'node --test test/paths.test.js',
+  )
+  assert.equal(testLabel(`npm test; "EXIT=$LASTEXITCODE"`), 'npm test')
+  assert.equal(testLabel('python -m pytest -q'), 'pytest -q')
+})
+
+test('long shell preambles are compacted before storage', () => {
+  const command = `$ErrorActionPreference='Continue' $node='C:\\x\\node.exe'; cd 'C:\\p'; & $node --test "C:\\p\\test\\a.test.js"`
+  const pending = { callId: 'c9', name: 'pwsh', args: { command }, turn: 1, step: 1 }
+  const facts = factsFromToolResult(pending, resultEvent({ callId: 'c9', exitCode: 0, text: 'pass' }), config)
+  const test = facts.find((fact) => fact.type === 'test')
+  assert.match(test.command, /\$?node --test/)
+  assert.equal(test.label, 'node --test test/a.test.js')
 })
 
 test('file writes are recorded without any file content', () => {

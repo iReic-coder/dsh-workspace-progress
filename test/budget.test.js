@@ -39,6 +39,17 @@ test('a 100-turn replay stays inside the summary and injection budgets', () => {
   assert.equal(aggregate.sessions.length, 20)
 })
 
+test('verified entries dedupe by label and stay diverse across sessions', () => {
+  const state = createSessionState({ id: 'session-11111111-0000-4000-8000-000000000000', cwd: '/tmp/p', root: '/tmp/p', name: 'p' })
+  applyFact(state, { type: 'test', key: 'test:a', command: 'node --test a', label: 'node --test test/a.js', ok: true, at: Date.now(), exitCode: 0 })
+  applyFact(state, { type: 'test', key: 'test:b', command: 'node --test b', label: 'node --test test/a.js', ok: true, at: Date.now(), exitCode: 0 })
+  applyFact(state, { type: 'test', key: 'test:c', command: 'npm test', label: 'npm test', ok: true, at: Date.now(), exitCode: 0 })
+  const aggregate = aggregateStates([state], { root: '/tmp/p', name: 'p' })
+  assert.equal(aggregate.verified.length, 2)
+  const deduped = aggregate.verified.find((item) => item.label.includes('test/a.js'))
+  assert.equal(deduped.count, 2)
+})
+
 test('file locking loses no concurrent updates', async () => {
   const dir = tempDir('wp-lock-')
   const file = path.join(dir, 'counter.json')

@@ -64,7 +64,7 @@ class ProgressEngine {
     this.workspaces = new Map()
     this.timers = new Set()
     this.disposed = false
-    this.version = '1.0.0'
+    this.version = '1.0.1'
   }
 
   /* ------------------------------------------------------------------ *
@@ -615,7 +615,7 @@ function compactFact(fact) {
   const { type, key, at, seq, ...rest } = fact
   const compact = { type, at, seq }
   if (key !== undefined) compact.key = key
-  for (const field of ['path', 'tool', 'op', 'ok', 'command', 'exitCode', 'test', 'content', 'status', 'name', 'turn', 'text', 'runs']) {
+  for (const field of ['path', 'tool', 'op', 'ok', 'command', 'label', 'exitCode', 'test', 'content', 'status', 'name', 'turn', 'text', 'runs']) {
     if (rest[field] !== undefined) compact[field] = rest[field]
   }
   return compact
